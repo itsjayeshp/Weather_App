@@ -1,0 +1,12 @@
+
+
+export const Header = () => {
+  return (
+    <header className='heading'>
+      <h1>Weather App</h1>
+    </header>
+  )
+}
+
+
+
