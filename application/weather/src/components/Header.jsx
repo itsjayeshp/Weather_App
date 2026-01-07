@@ -1,12 +1,9 @@
-
-
-export const Header = () => {
+const Header = () => {
   return (
-    <header className='heading'>
+    <header className="heading">
       <h1>Weather App</h1>
     </header>
-  )
-}
+  );
+};
 
-
-
+export default Header;

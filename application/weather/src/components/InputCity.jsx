@@ -1,9 +1,9 @@
-export const InputCity = ({ city, onInputHandler, onSubmitHandler }) => {
+const InputCity = ({ inputCity, onInputHandler, onSubmitHandler }) => {
   return (
     <form onSubmit={onSubmitHandler} className="input-container">
       <input
         type="text"
-        value={city}
+        value={inputCity}
         onChange={onInputHandler}
         placeholder="Enter city name"
       />
@@ -11,3 +11,5 @@ export const InputCity = ({ city, onInputHandler, onSubmitHandler }) => {
     </form>
   );
 };
+
+export default InputCity;
