@@ -1,13 +1,10 @@
 import React, { useEffect, useState, useCallback } from "react";
 import InputCity from "./Components/InputCity";
 import Header from "./Components/Header";
+import ErrorBoundary from "./Components/ErrorBoundary";
 import "./styles.css";
 import ShowWeather from "./Components/ShowWeather";
-
-// Constants
-const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
-const API_TIMEOUT = 10000; // 10 seconds
-const DEFAULT_CITY = "Seattle";
+import { config, logger } from "./utils/config";
 
 // Error messages
 const ERROR_MESSAGES = {
@@ -25,8 +22,8 @@ const ERROR_MESSAGES = {
 export default function App() {
   // State management
   const [weatherData, setWeatherData] = useState(null);
-  const [inputCity, setInputCity] = useState(DEFAULT_CITY);
-  const [cityName, setCityName] = useState(DEFAULT_CITY);
+  const [inputCity, setInputCity] = useState(config.app.defaultCity);
+  const [cityName, setCityName] = useState(config.app.defaultCity);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
@@ -101,16 +98,17 @@ export default function App() {
       return;
     }
 
+    logger.info(`Fetching weather data for: ${city}`);
     setIsLoading(true);
     setError(null);
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
+    const timeoutId = setTimeout(() => controller.abort(), config.api.timeout);
 
     try {
-      const URL = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
+      const URL = `${config.api.baseUrl}/weather?q=${encodeURIComponent(
         city
-      )}&appid=${API_KEY}&units=metric`;
+      )}&appid=${config.api.key}&units=metric`;
 
       const response = await fetch(URL, {
         signal: controller.signal,
@@ -164,11 +162,12 @@ export default function App() {
         throw new Error(ERROR_MESSAGES.UNKNOWN);
       }
 
+      logger.info(`Successfully fetched weather data for: ${data.name}`);
       setWeatherData(data);
       setError(null);
       setRetryCount(0);
     } catch (err) {
-      console.error("Weather fetch error:", err);
+      logger.error("Weather fetch error:", err);
 
       // Handle specific error types
       if (err.name === "AbortError") {
@@ -205,32 +204,34 @@ export default function App() {
   }, [cityName, fetchWeatherData]);
 
   return (
-    <div className="app-container">
-      <Header />
-      <InputCity
-        inputCity={inputCity}
-        onInputHandler={inputHandler}
-        onSubmitHandler={submitHandler}
-        isLoading={isLoading}
-        error={error}
-      />
+    <ErrorBoundary>
+      <div className="app-container">
+        <Header />
+        <InputCity
+          inputCity={inputCity}
+          onInputHandler={inputHandler}
+          onSubmitHandler={submitHandler}
+          isLoading={isLoading}
+          error={error}
+        />
 
-      {isLoading ? (
-        <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <p className="loading-text">Fetching weather data...</p>
-        </div>
-      ) : error ? (
-        <div className="error-container">
-          <div className="error-icon">⚠️</div>
-          <h3 className="error-message">{error}</h3>
-          <button className="retry-btn" onClick={handleRetry}>
-            Try Again {retryCount > 0 && `(${retryCount})`}
-          </button>
-        </div>
-      ) : weatherData ? (
-        <ShowWeather data={weatherData} />
-      ) : null}
-    </div>
+        {isLoading ? (
+          <div className="loading-container">
+            <div className="loading-spinner"></div>
+            <p className="loading-text">Fetching weather data...</p>
+          </div>
+        ) : error ? (
+          <div className="error-container">
+            <div className="error-icon">⚠️</div>
+            <h3 className="error-message">{error}</h3>
+            <button className="retry-btn" onClick={handleRetry}>
+              Try Again {retryCount > 0 && `(${retryCount})`}
+            </button>
+          </div>
+        ) : weatherData ? (
+          <ShowWeather data={weatherData} />
+        ) : null}
+      </div>
+    </ErrorBoundary>
   );
 }
