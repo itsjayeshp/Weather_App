@@ -13,12 +13,257 @@
 
 /* Header */
 .heading {
-  background-color: #0f172a;
-  color: yellow;
-  font-size: 2rem;
-  font-family: cursive;
-  padding: 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  background-size: 200% 200%;
+  animation: gradientShift 10s ease infinite;
+  padding: 2rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.heading::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+
+/* Weather Icons */
+.weather-icons {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.weather-icon {
+  width: 32px;
+  height: 32px;
+  stroke-width: 2;
+  color: rgba(255, 255, 255, 0.9);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  transition: all 0.3s ease;
+}
+
+.weather-icon.sun {
+  animation: rotateSun 20s linear infinite;
+}
+
+.weather-icon.cloud {
+  animation: floatCloud 3s ease-in-out infinite;
+}
+
+.weather-icon.rain {
+  animation: rainDrop 2s ease-in-out infinite;
+}
+
+.weather-icon:hover {
+  transform: scale(1.2);
+  color: #fff;
+  filter: drop-shadow(0 4px 8px rgba(255, 255, 255, 0.3));
+}
+
+/* Header Content */
+.header-content {
+  flex: 1;
   text-align: center;
+  min-width: 300px;
+}
+
+.header-title {
+  font-size: 3rem;
+  font-weight: 800;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  letter-spacing: -1px;
+}
+
+.title-gradient {
+  background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+.title-accent {
+  color: #fbbf24;
+  text-shadow: 0 2px 10px rgba(251, 191, 36, 0.5);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.header-subtitle {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0.5rem 0 0;
+  font-weight: 300;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  animation: fadeInUp 1s ease;
+}
+
+/* Live Clock */
+.header-time {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.header-time:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.clock-icon {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+  color: #fff;
+  animation: tick 1s steps(60) infinite;
+}
+
+.time-display {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 1px;
+}
+
+/* Animations */
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes rotateSun {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes floatCloud {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes rainDrop {
+  0%, 100% {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(3px);
+    opacity: 0.7;
+  }
+}
+
+@keyframes shimmer {
+  0%, 100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.2);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tick {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(6deg);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .heading {
+    padding: 1.5rem 1rem;
+  }
+  
+  .header-container {
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .weather-icons {
+    order: 1;
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .header-content {
+    order: 2;
+  }
+  
+  .header-title {
+    font-size: 2rem;
+  }
+  
+  .header-time {
+    order: 3;
+  }
 }
 
 /* Input */
