@@ -1,58 +1,49 @@
-import React, { useState } from "react";
-import Header from "./components/Header";
-import InputCity from "./components/InputCity";
-import ShowWeather from "./components/ShowWeather";
-import "./App.css";
+import React, { useEffect, useState } from "react";
+import InputCity from "./Components/InputCity";
+import Header from "./Components/Header";
+import ShowWeather from "./Components/ShowWeather"
+import "./styles.css";
 
-const App = () => {
+export default function App() {
+  const [weatherData, setWeatherData] = useState({});
   const [inputCity, setInputCity] = useState("Seattle");
-  const [weatherData, setWeatherData] = useState(null);
-  const [error, setError] = useState("");
+  const [cityName, setCityName] = useState("Seattle");
+  const [error, setError] = useState(false);
 
-  const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
-
-  const inputHandler = (event) => {
-    setInputCity(event.target.value);
+  //  Input element handler
+  const inputHandler = (e) => {
+    setInputCity(e.target.value);
   };
 
-  const fetchWeatherData = async (cityName) => {
-    const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${API_KEY}`;
+  //  Search button
+  const submitHandler = (e) => {
+    e.preventDefault();
+    setError(false);
+    setCityName(inputCity);
+  };
 
-    try {
-      const response = await fetch(apiUrl);
-      const data = await response.json();
+  //  Weather API
+  const URL = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid={{api_key_weather_app}}`;
 
-      if (!response.ok) {
-        setError(data.message || "Invalid city name");
-        setWeatherData(null);
-      } else {
-        setWeatherData(data);
-        setError("");
-      }
-    } catch {
-      setError("Network error. Please try again.");
-      setWeatherData(null);
+
+  //  Fetching weather data
+  async function fetchData(URL) {
+    const response = await fetch(URL);
+    const data = await response.json();
+    if (data.cod === "404") {
+      setError(true);
+    } else {
+      setWeatherData(data);
     }
-  };
+  }
 
-  const submitHandler = (event) => {
-    event.preventDefault();
-    fetchWeatherData(inputCity);
-  };
-
-  const getBackgroundColor = () => {
-    if (!weatherData) return "#ffffff";
-    const temp = weatherData.main.temp - 273.15;
-    if (temp < 10) return "#4a90e2";
-    if (temp <= 30) return "#7ed321";
-    return "#d0021b";
-  };
+  //  To fetch weather data
+  useEffect(() => {
+    fetchData(URL);
+  }, [URL]);
 
   return (
-    <div
-      className="App"
-      style={{ backgroundColor: getBackgroundColor(), minHeight: "100vh" }}
-    >
+    <div>
       <Header />
 
       <InputCity
@@ -60,12 +51,7 @@ const App = () => {
         onInputHandler={inputHandler}
         onSubmitHandler={submitHandler}
       />
-
-      {error && <p className="error-message">{error}</p>}
-
-      {weatherData && !error && <ShowWeather weather={weatherData} />}
+      <ShowWeather data={weatherData}/>
     </div>
   );
 }
-
-export default App;
